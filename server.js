@@ -1,7 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const connectDB = require('./config/db');
 
 dotenv.config();
 
@@ -10,9 +10,11 @@ const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
+// Connect DB once
+connectDB();
+
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/projects', require('./routes/projects'));
-
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -20,15 +22,5 @@ app.get('/api/health', (req, res) => {
     message: 'Server is running successfully',
   });
 });
-
-
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => {
-    console.log('✅ MongoDB Connected');
-  })
-  .catch((err) => {
-    console.error('❌ MongoDB Error:', err.message);
-  });
-
 
 module.exports = app;
