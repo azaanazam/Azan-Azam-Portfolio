@@ -10,7 +10,7 @@ const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
-// Connect DB once
+// ✅ IMPORTANT: DB connect safely (serverless safe)
 connectDB();
 
 app.use('/api/contact', require('./routes/contact'));

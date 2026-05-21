@@ -9,20 +9,17 @@ if (!cached) {
 async function connectDB() {
   if (cached.conn) return cached.conn;
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGO_URL, {
-      serverSelectionTimeoutMS: 5000,
-    });
-  }
-
   try {
+    cached.promise = mongoose.connect(process.env.MONGO_URL);
     cached.conn = await cached.promise;
+
     console.log("✅ MongoDB Connected");
+
+    return cached.conn;
   } catch (err) {
     console.error("❌ MongoDB Connection Failed:", err.message);
+    throw err;
   }
-
-  return cached.conn;
 }
 
 module.exports = connectDB;

@@ -1,10 +1,20 @@
+const express = require('express');
+const router = express.Router();
+const connectDB = require('../config/db');
+const Message = require('../models/Message');
+
 router.post('/', async (req, res) => {
   try {
-    await require('../config/db')(); // ENSURE connection first
+    // ✅ ensure DB connected before insert
+    await connectDB();
 
     const { name, email, message } = req.body;
 
-    const newMessage = new Message({ name, email, message });
+    const newMessage = new Message({
+      name,
+      email,
+      message,
+    });
 
     await newMessage.save();
 
@@ -14,9 +24,13 @@ router.post('/', async (req, res) => {
     });
 
   } catch (error) {
+    console.log("❌ ERROR:", error);
+
     res.json({
       success: false,
       message: error.message,
     });
   }
 });
+
+module.exports = router;
