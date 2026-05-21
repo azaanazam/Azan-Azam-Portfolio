@@ -1,16 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const Message = require('../models/Message'); // apna model
-
 router.post('/', async (req, res) => {
   try {
+    await require('../config/db')(); // ENSURE connection first
+
     const { name, email, message } = req.body;
 
-    const newMessage = new Message({
-      name,
-      email,
-      message,
-    });
+    const newMessage = new Message({ name, email, message });
 
     await newMessage.save();
 
@@ -26,5 +20,3 @@ router.post('/', async (req, res) => {
     });
   }
 });
-
-module.exports = router;

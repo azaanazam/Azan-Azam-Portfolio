@@ -1,14 +1,28 @@
 const mongoose = require('mongoose');
 
-async function connectDB() {
-  try {
-    await mongoose.connect(process.env.MONGO_URL);
+let cached = global.mongoose;
 
-    console.log("✅ MongoDB Connected Successfully");
-  } catch (err) {
-    console.error("❌ MongoDB Connection Failed:");
-    console.error(err.message);
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGO_URL, {
+      serverSelectionTimeoutMS: 5000,
+    });
   }
+
+  try {
+    cached.conn = await cached.promise;
+    console.log("✅ MongoDB Connected");
+  } catch (err) {
+    console.error("❌ MongoDB Connection Failed:", err.message);
+  }
+
+  return cached.conn;
 }
 
 module.exports = connectDB;
